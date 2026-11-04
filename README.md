@@ -119,6 +119,7 @@ Fork it, keep the fifteen, add the skills your operation needs: a client's namin
 
 ## Versions
 
+- **v1.7** (2026-11-04): build-puzzle-process matches a reference image. When the user gives a picture or names the layout, the proposal names which steps sit in which row, the handles follow the picture, and the builder places the steps by hand on the canvas, then checks every step is still in the section and the positions held after a reload. map-the-team draws org and people charts top to bottom, infers reporting lines from title seniority, and runs every reporting line from the manager's bottom handle to the report's top handle.
 - **v1.6** (2026-10-23): three skills from the Circle AI skills library, generalized: brief-a-role, change-impact, evaluate-the-stack. build-puzzle-process reads a tool's configuration as a source (pipelines as steps, automations as drops). find-automation-opportunities now finds bottlenecks, waits, hand-backs, ownership gaps and double entry, tiers everything, and annotates steps only when asked.
 - **v1.5** (2026-10-23): start-here rounds out a workspace Puzzle's onboarding has already seeded, in five approved stages, then rounds out the first map; every write skill ends its proposal with the same push plan block. The standalone build-puzzle-process repo is archived.
 - **v1.4** (2026-10-22): share-the-map, and a one-line offer to share at the end of every build.

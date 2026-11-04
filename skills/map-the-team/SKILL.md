@@ -48,7 +48,7 @@ Present the proposal as two tables, then stop for approval:
 
 ## People
 | Person | Type | Email | Roles | Reports to | Tools |
-|---|---|---|---|---|---|---|
+|---|---|---|---|---|---|
 ```
 
 ### The push plan

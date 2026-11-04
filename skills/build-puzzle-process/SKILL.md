@@ -1,6 +1,6 @@
 ---
 name: build-puzzle-process
-description: Build thorough processes in any Puzzle workspace via the Puzzle MCP. Load whenever the user asks to "build out this process", "map this in Puzzle", "document this workflow", "create a process for X", "turn this transcript into a map", "map how our [tool] is set up", or when a workflow needs to become a Puzzle section with steps, executors, roles, tools, conditionals, attributes and notes. Also load when editing or extending an existing Puzzle process. Covers one consolidated intake, as few sections as possible (10 to 25 steps each), conditional branches and go-to steps, orientation chosen by shape, a conditional trace, one right-to-left connector default with three exceptions, a handle table, a two-call handle pass, go-to steps for anything that would cross, a visual check of the built map, step typing and titling, RACI roles with hourly rates, costing inputs, attributes, tools, triggers, delay steps and a changelog entry. When in doubt building anything in Puzzle, use this skill.
+description: Build thorough processes in any Puzzle workspace via the Puzzle MCP. Load whenever the user asks to "build out this process", "map this in Puzzle", "document this workflow", "create a process for X", "turn this transcript into a map", "map how our [tool] is set up", or when a workflow needs to become a Puzzle section with steps, executors, roles, tools, conditionals, attributes and notes. Also load when editing or extending an existing Puzzle process. Covers one consolidated intake, as few sections as possible (10 to 25 steps each), conditional branches and go-to steps, orientation chosen by shape, a conditional trace, one connector default with three exceptions, a handle table, a two-call handle pass, go-to steps for anything that would cross, a visual check, a reference image matched by hand, step typing and titling, RACI roles with hourly rates, costing inputs, attributes, tools, triggers, delay steps and a changelog entry. When in doubt building anything in Puzzle, use this skill.
 ---
 
 # Build a Puzzle Process
@@ -21,11 +21,11 @@ Two rules govern everything else:
 3. **Draft the full process privately.** Work through every step, branch, and input against the Completeness Checklist below. Every gap you find becomes an intake question.
 4. **Run the single intake round.** One consolidated set of questions covering every missing input (see "The single intake round"). Do the research first (e.g. hourly rates, proposed attributes) so most questions are confirm/adjust rather than open-ended.
 5. **Trace each conditional.** One line per diamond: which outcome continues on the row, which goes above, which goes below, which becomes a go-to (see "The conditional trace"). That line sets the `steps` array order and marks the few connections that are not the default. For three or more conditionals, or any branch that crosses another, also draw the grid sketch. The acceptance bar is **zero crossings and zero connectors passing through a step**; anything that would still cross becomes a `go_to` step.
-6. **Propose the full process in chat.** Every step fully specified: name, type, status, executor, roles, tools, attributes, frequency, duration, and a one-line note — plus the orientation (with the reason), the branch wiring, the **conditional trace** (and the grid sketch when required), and the **handle table** (see "Connectors"): one row per connection with its rule (D, A, B, C, or go-to), label, source handle, and target handle. Let the user evaluate the structure and the layout before anything is written to Puzzle.
+6. **Propose the full process in chat.** Every step fully specified: name, type, status, executor, roles, tools, attributes, frequency, duration, and a one-line note — plus the orientation (with the reason), the branch wiring, the **conditional trace** (and the grid sketch when required), and the **handle table** (see "Connectors"): one row per connection with its rule (D, A, B, C, or go-to), label, source handle, and target handle. When the user gave a picture or named the layout, the proposal also says which steps sit in which row or column, and the handle table follows the picture (see "Match a reference image"). Let the user evaluate the structure and the layout before anything is written to Puzzle.
 7. **Create missing canvas objects first.** New roles (with hourly rates) on the Team Canvas, new tools on the Tools Canvas, new entities/attributes in the data model. These must exist before the workflow build so IDs are available for linking.
 8. **Build in one call.** Use `create_process` with the full `sections` (one, or the stage sections the proposal approved), `steps`, and `connections` arrays in a single call, wiring connections via `temp_id` references, with `label` set inline on every connection that needs one. Include `role_ids`, `tool_ids`, `duration`, `frequency`, `status`, `executor`, `type`, and `notes` directly on each step. Set `direction`. Capture the returned step IDs. (Connections in `create_process` carry only `from`, `to`, and `label` — handles come next.)
 9. **Run the handle pass, two calls.** `list_steps` on the new section with `include: ["connections", "connections.connection_id", "connections.to_step_id", "connections.to_step_name", "connections.label"]` to capture every connection ID. Call one sets the default on **every** connection (`right → left` in LTR, `bottom → top` in TTB), no exceptions, in batches of 25. Call two sets only the rows the handle table marks A, B or C. Same turn as the build. A connection that misses call one keeps Puzzle's nearest-side default, and a map with nearest-side handles is not built.
-10. **Look at the map.** Screenshot the section (built-in browser, then Claude in Chrome, then computer use on the desktop, then ask the user; see "The visual check") and trace every connector. Fix any crossing, pass-through, or hook via `update_workflow` or a go-to step, then screenshot again. The handle table is a prediction of the layout; the screenshot is the proof. If no screenshot is possible, the changelog entry says the layout is unverified.
+10. **Look at the map.** When a reference image sets the layout, first place the steps by hand (see "Match a reference image"). Screenshot the section (built-in browser, then Claude in Chrome, then computer use on the desktop, then ask the user; see "The visual check") and trace every connector. Fix any crossing, pass-through, or hook via `update_workflow` or a go-to step, then screenshot again. The handle table is a prediction of the layout; the screenshot is the proof. If no screenshot is possible, the changelog entry says the layout is unverified.
 11. **Link what create_process can't carry.** Attributes always link post-build via `link_to_steps` with `type: attribute`. Approver, consulted, and informed roles also link post-build via `link_to_steps` with `type: role` and the right `involvement` (the `role_ids` array in `create_process` covers responsible only). Verify roles and tools landed; patch any misses with `link_to_steps`.
 12. **Verify.** Re-run `list_steps` with includes for roles, tools, attributes, duration, frequency, notes, and connections. Confirm every connection in the handle table received a successful update (the API does not read handles back, so your record of the pass is the verification). Fix any label or handle that reads wrong via `update_workflow`.
 13. **Memorialize in the changelog.** Always, including the handle table and the result of the visual check. See "Changelog" below.
@@ -62,7 +62,7 @@ Per process:
 - Every conditional traced (continue, above, below, go-to); grid sketched when there are three or more conditionals or any branch crosses another
 - Every connection in the handle table with its rule (D by default; A, B, C or go-to by exception) and its handle pair before building
 - Every post-conditional connector labeled
-- No row wrapping and no manual-layout instructions to the user
+- No row wrapping and no manual-layout instructions to the user; a reference image is matched by placing the steps yourself
 - Handle pass executed as two `update_workflow` calls (the default on every connection ID, then the exceptions), recorded by ID
 - Visual check done: screenshot taken, every connector traced, fixes applied; or the changelog says the layout is unverified
 - Changelog entry written
@@ -127,7 +127,7 @@ Everything else is unchanged: one intake round for what the configuration doesn'
 
 ### What you actually control
 
-Puzzle positions steps with a **Graphviz auto-layout computed from the connection graph and `direction`**. There is no x/y, no row, no column field anywhere in the API. The builder shapes the layout through exactly four levers: (a) `direction` on `create_process`, (b) which connections exist and which step each one points to, (c) the order steps are listed in the `steps` array, and (d) handles set on each connection **after** the build. Whatever Graphviz places is what ships; the job is to shape the graph and the handles so that result reads well. The API cannot wrap a long row onto a second line and cannot pin a branch above versus below the main line — so this skill never attempts either, and never hands the user manual-layout instructions ("drag this under that").
+Puzzle positions steps with a **Graphviz auto-layout computed from the connection graph and `direction`**. There is no x/y, no row, no column field anywhere in the API. The builder shapes the layout through exactly four levers: (a) `direction` on `create_process`, (b) which connections exist and which step each one points to, (c) the order steps are listed in the `steps` array, and (d) handles set on each connection **after** the build. Whatever Graphviz places is what ships; the job is to shape the graph and the handles so that result reads well. The API cannot wrap a long row onto a second line and cannot pin a branch above versus below the main line — so this skill never attempts either through the API, and never hands the user manual-layout instructions ("drag this under that"). The one exception is a reference image: when the user gives a picture or names the layout, the builder places the steps by hand on the canvas itself (see "Match a reference image").
 
 ### Vocabulary
 
@@ -151,6 +151,8 @@ If the user hasn't said, ask in the intake round — but recommend, and state th
 - **left_to_right** when the map reads as a timeline of mostly Person steps with a handful of conditionals, where role and time badges matter. The default for any process where a reader should see "who does what, in order."
 - **top_to_bottom** when the process is a pipeline of Automation / AI Agent steps with a conditional every two or three steps, branches that reconverge within a row or two, and terminators like "Skip — no match." Vertical reads like a flowchart and keeps each fork's outcomes side by side. Also prefer it for a long, mostly linear spine (roughly twelve or more spine steps): since the skill never wraps rows, a long LTR spine becomes one endless row, whereas a long column scrolls naturally.
 - **Hybrid** is not a third `direction` value; it is LTR with drops. Choose it whenever a Person-driven spine triggers automations.
+
+A picture wins over all three. When the user gives one (a slide, a whiteboard photo, another tool's diagram) or names the layout, choose the `direction` closest to it and match the rest by hand (see "Match a reference image").
 
 Set it on `create_process` via `direction`.
 
@@ -202,7 +204,7 @@ Two lines that cross, or a line through a step, mean a different `steps` order, 
 - **Structure, set by the `steps` array.** List the spine in order. After each diamond, list the continuing outcome's target first (it stays on the row), then the branch with its own steps (above), then the terminator or skip target (below). List shared terminators last so they land at the edge of the map.
 - **Outcomes.** At most three per conditional. A fourth means two conditionals, or a top-to-bottom map.
 - **Labels.** Every connection leaving a conditional carries a label of one to three words; the house style prefixes them with ✅ / ❌ / ➕ where it helps ("✅Yes", "❌No", "➕New", "✅Existing"). Longer labels only when they carry the routing logic itself ("Stalled (25+ L14D)"). Spine connections in a timed sequence carry timing labels ("Day 0", "+5 days", "cohort close"). Branch labels sit on the horizontal run of the connector, so word them to read there.
-- **No wrapping — ever.** The spine is one row, however long. A spine too long for one row is a reason to go top-to-bottom, never to wrap it and never to ask the user to drag steps.
+- **No wrapping unless a picture asks for it.** The spine is one row, however long. A spine too long for one row is a reason to go top-to-bottom, never to wrap it and never to ask the user to drag steps. The one exception is a reference image that wraps it; then the builder places the second row by hand (see "Match a reference image").
 - **Never in LTR.** Never enter a step from its right. Never leave a diamond from its top or bottom. Never send one outcome out the right and another out the bottom. Never draw a backward connector longer than one step. Never let two lines into one target arrive from different sides. Never let a connector cross another connector or run through a step.
 
 ### Top-to-bottom grammar
@@ -347,7 +349,21 @@ The handle table is a prediction; Graphviz decides where steps land. After the h
 4. Fix each flagged connector with `update_workflow` (the handle pair, or an exception C arc) or replace it with a go-to step. Update the handle table to match.
 5. Screenshot again. Repeat until the trace is clean, then report what you changed in the changelog.
 
-Do not hand the user manual-drag instructions as a fix. Every fix is a handle, the `steps` order, or a go-to step.
+Do not hand the user manual-drag instructions as a fix. Every fix is a handle, the `steps` order, or a go-to step. Placing steps by hand is only for matching a reference image, and the builder does it.
+
+### Match a reference image
+
+When the user gives a picture of the flow (a slide, a whiteboard photo, another tool's diagram) or names the layout ("two rows", "the approval sits under the request"), the picture sets the layout. Graphviz will not reproduce it: it ranks steps from the graph, so a flow drawn on two rows usually lands on one. The builder then places the steps by hand on the canvas. That is part of the build, not instructions for the user.
+
+1. **Read the picture into the proposal.** Say which steps sit in which row or column, in reading order, and list the `steps` array in that order. Set the handle table to the picture: `bottom → top` where the flow drops to a lower row, `top → bottom` where it rises back to a higher row, and the `right → left` default along a row (`bottom → top` down a column in TTB). The zero-crossings bar still holds; a line the picture would cross becomes a go-to step.
+2. **Build and run the handle pass as usual.** `create_process`, then the two `update_workflow` calls with the handles from step 1. Graphviz places the steps wherever it places them.
+3. **Make the section bigger before moving any step outside its current area.** Select the section by its label, then drag a corner handle. Dragging an edge moves the whole section instead of resizing it.
+4. **Place the steps.** Open the section `url` from `list_sections` in the built-in browser (Claude in Chrome when the built-in browser is not available), screenshot, and drag each step to its spot in the picture. If several drags in one batch fail with "Page navigated during drag", take a fresh screenshot and redo the remaining drags.
+5. **Check the section still holds every step.** A step dropped outside the section's area leaves the section (`section_id` becomes null). Run `list_steps` on the section after moving. If a step dropped out, use the canvas undo button, enlarge the section, and move it again.
+6. **Confirm the positions saved.** Reload once and screenshot. If the canvas shows up blank after a hard reload, open the section from the tab's summary panel instead. Then run the visual check against the picture.
+7. **Record it.** The changelog entry says the layout was set by hand to match the reference image and names which steps sit in which row.
+
+If no browser can drag on the canvas, say so in the closing message and the changelog entry: the map is built, and its layout does not match the picture yet.
 
 ---
 
@@ -493,7 +509,7 @@ Set step `status` deliberately: **Live** for steps running in production today; 
 When the process is built (or meaningfully changed), record it. Always. Use `create_changelog_entries` with a Markdown body (title as the first heading) that captures:
 
 - What the user asked for, in substance (the process, the decisions made in intake: orientation and why, rates, attributes, branch logic)
-- What was created or changed, across **all** elements: section and steps, connections and labels, the handle table as applied, what the visual check found and fixed, roles created (with rates), tools added, entities/attributes created and linked, cost inputs set
+- What was created or changed, across **all** elements: section and steps, connections and labels, the handle table as applied, what the visual check found and fixed, whether the layout was set by hand to match a reference image (and which steps sit in which row), roles created (with rates), tools added, entities/attributes created and linked, cost inputs set
 - Why — the rationale behind any judgment calls
 
 Set `status: completed`, set the owner (`person_id` from `list_people`), then use `update_changelog_entries` to associate the relevant steps and tools so the entry is wired into the map. A build without a changelog entry is an incomplete build.
@@ -534,6 +550,7 @@ And the process as a whole:
 - [ ] Any crossing that couldn't be designed away replaced with a `go_to` step
 - [ ] `steps` array ordered: spine, then per diamond continue / above / below, shared terminators last
 - [ ] No row wrapping and no manual-layout instructions to the user; a long linear spine is a reason to choose top-to-bottom
+- [ ] A reference image, when given, matched: rows named in the proposal, handles set to the picture, steps placed by hand, every step still in the section, positions confirmed after a reload, and the changelog says the layout was set by hand
 - [ ] Nothing enters a step from the "wrong" side; nothing leaves a diamond's top or bottom
 - [ ] Visual check done: section screenshotted (browser, Chrome, computer use, or the user), every connector traced, fixes applied and re-screenshotted; or the changelog says the layout is unverified
 - [ ] Named people resolved to roles on the People Canvas (created via `create_people` + `add_person_roles` if missing)
@@ -556,7 +573,7 @@ And the process as a whole:
 ## MCP mechanics that reliably work
 
 - `create_process` in **one call** with sections + steps + connections, wiring via `temp_id` (more reliable than creating steps then connections separately). Connections accept `from`, `to`, and `label` only — set labels at build time. Set `direction` on the call. For adding to an existing section, pass the `section_id` directly instead of creating a new one.
-- Step positions are computed by Graphviz from the connection graph and `direction`. There is no position field to set; shape the graph (see "Shaping the graph") and let the layout follow.
+- Step positions are computed by Graphviz from the connection graph and `direction`. There is no position field to set; shape the graph (see "Shaping the graph") and let the layout follow. The only way to set a position is to drag the step on the canvas, which this skill does only to match a reference image.
 - Handles are set **only** via `update_workflow` on existing connection IDs (`connections` array: `id`, `source_handle`, `target_handle`; `from_step_id`, `to_step_id`, and `label` are also accepted for rewiring). Get the IDs from `list_steps` with `include: ["connections", "connections.connection_id", "connections.to_step_id", "connections.to_step_name", "connections.label"]`. `list_steps` does not return handles, so keep your handle table as the source of truth.
 - `create_connections` (for patching an existing map) likewise accepts only `from_step_id`, `to_step_id`, `label` — follow it with the same handle pass.
 - Steps in `create_process` carry `role_ids`, `tool_ids`, `primary_tool_id`, `duration`, `frequency`, `status`, `executor`, `type`, and `notes` directly — front-load everything the schema allows. Attributes are the exception: always a post-build `link_to_steps` pass.
