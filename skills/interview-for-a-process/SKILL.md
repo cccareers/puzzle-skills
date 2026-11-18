@@ -99,7 +99,7 @@ The answers feed `build-puzzle-process` directly: the trigger becomes the first 
 
 What people said, as opposed to what the process is, goes on the map as comments, through the comment plan:
 
-- **pain_point**: where it hurts, in the person's words, with their role, the date and any cost they named ("two hours every Monday"). On the step where it hurts. `find-automation-opportunities` reads these.
+- **pain_point**: where it hurts, in the person's words, with their role, the date and any cost they named ("two hours every Monday"). On the step where it hurts. `find-automation-opportunities` reads these. The process owner (on a client engagement, the client) gives the proposed solution as a reply in the thread; the team that builds it resolves the thread once it is Live.
 - **question**: anything still unconfirmed after the conversation, with who can answer it. Resolved once the answer is in the step's fields.
 - **idea**: a wish or an improvement they suggested.
 - **note**: context worth keeping that fits no field.

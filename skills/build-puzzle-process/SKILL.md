@@ -506,9 +506,8 @@ A tag marks what the map has no field for: a cadence, a place where work waits o
 | A role, a team, a person | The step's roles with their RACI involvement, and the people in each role |
 | A tool | The step's tools |
 | Manual, automated, AI | The executor |
-| Deprecated, retired, old | Status Archived |
-| Needs review, to confirm | An open `question` comment on the step |
-| Approval required | An approver role on the step; a tag only when the approver is outside the map (the client, a regulator) |
+
+- **Flags are tags.** Approval required, Needs review and Deprecated say something about the step that no field holds. Keep them as tags; never steer them to a field.
 
 - **Link after the build.** `create_process` carries no tags: `link_to_steps` with `type: tag` and `tag_id`, one entry per step and tag (re-tagging is a no-op). Remove one with `unlink_from_steps`, `type: step_tag`, and the `tags.step_tag_id` from `list_steps`. `update_tags` renames, recolors, changes the emoji, or moves a tag to another group with `tag_group_id`.
 

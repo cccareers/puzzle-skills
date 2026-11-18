@@ -132,7 +132,7 @@ When step 7 applies, the same call (create carries no state fields) sets `add_cu
 
 Then read it back: `list_changelog_entries` with the `id` and `include: ["current_state", "future_state", "cost_analysis"]`. `has_current` and `has_future` should both be true. A side that totals zero while it holds steps is missing inputs (durations, frequencies, role rates), not free: report which steps lack them and leave the figure as it is. Never fill an input to make the number move; `cost-a-process` finds the gaps.
 
-When the decision answers an open question or resolves a pain point recorded as a comment on the map, reply on that thread with one line and the entry's title and id, then resolve it (`create_comments` with `parent_id`, then `update_comments` with `resolved: true`). On steps the decision changes where a reader would look for the reason, a `decision` comment with the same one line is optional, and only after the user approves it. The comment points; the entry is the record.
+When the decision answers an open question or resolves a pain point recorded as a comment on the map, reply on that thread with one line and the entry's title and id, then resolve it (`create_comments` with `parent_id`, then `update_comments` with `resolved: true`). A pain point is resolved only when the process owner (on a client engagement, the client) has given the proposed solution in the thread and the change is Live; until then, reply with the pointer and leave it open. The team that built the change resolves it. On steps the decision changes where a reader would look for the reason, a `decision` comment with the same one line is optional, and only after the user approves it. The comment points; the entry is the record.
 
 ### 11. Confirm
 
