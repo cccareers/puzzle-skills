@@ -28,7 +28,7 @@ Automation and AI Agent steps carry no labor cost. Their tool cost (the automati
 3. Rates: `list_roles` with `include: ["hourly_rate", "team_name"]`. The rate arrives as `{"amount", "currency"}` or `null`; a null rate is a missing input.
 4. Tool costs: `list_tools` scope `workspace` with `include: ["cost_items", "status"]`.
 5. Steps per tool, for allocation: from the step list already loaded, or `list_steps` with `tool_id` for each tool when the scope is the whole workspace.
-6. Scenarios already recorded: `list_changelog_entries` with `include: ["body", "status", "associated_steps.step_id"]` for entries that carry a cost scenario; cite them rather than recomputing where they cover the same change.
+6. Scenarios already recorded: `list_changelog_entries` with `include: ["body", "status", "associated_steps.step_id", "current_state", "future_state", "cost_analysis"]`. On the Optimizer plan an entry can name its current state and future state sections or tabs, and Puzzle rolls each side up: labor cost, tool cost, total and hours, monthly and annual, plus the net (future minus current; negative is a saving). An entry whose `has_current` and `has_future` are both true is the scenario of record for that change: cite it rather than recomputing. Older entries may carry a cost table in the body instead; cite those as they are.
 7. Tags, when the user asks for cost by tag ("what do our weekly steps cost", "what does the onboarding program cost across teams"): `list_steps` with `tag_id`, with the same includes as step 2.
 
 ## Procedure
@@ -36,12 +36,12 @@ Automation and AI Agent steps carry no labor cost. Their tool cost (the automati
 1. For every Person step in scope, pull duration, frequency, responsible role and rate. List every step missing any of the four. Those are reported, not estimated.
 2. Compute labor per step, per section, per tab.
 3. Convert each tool's cost items to a monthly figure. Allocate across linked steps by weight. Report unallocated tools.
-4. If a future state exists (a tab, a section, or a proposal from `find-automation-opportunities`), compute it the same way. Steps that became Automation or AI Agent carry no labor; add new tools at the cost the user gave or the quoted list price, marked as such.
+4. If a future state exists (a tab, a section, or a proposal from `find-automation-opportunities`), compute it the same way. Steps that became Automation or AI Agent carry no labor; add new tools at the cost the user gave or the quoted list price, marked as such. When a changelog entry already carries both sides, lead with its cost analysis and use this model for what the roll-up does not show: the per-step table, the gaps, cost by tag or by role. If a side of the roll-up totals zero while it holds steps, its inputs are missing; list them. If the roll-up and this model disagree, report both and name the inputs that explain the difference; never adjust an input to make them match.
 5. Compute the net, hours returned, and payback from one-time costs the user supplies.
-6. Cost by tag, when asked: the same per-step labor and allocated tool figures, summed over the steps carrying the tag, across every section they sit in. A step carrying two of the tags compared counts under each, so the rows do not add up to the total; say so.
+6. Cost by tag, when asked: the same per-step labor and allocated tool figures, summed over the steps carrying the tag, across every section they sit in. A step carrying two of the tags compared counts under each, so the rows do not add up to the total; say so. Operational tags make the sharpest cuts: what the steps tagged Error-prone or Bottleneck cost each month is often the case for fixing them.
 7. Write the report. Every figure cites the steps, the rates and the tool costs behind it.
 8. Propose it in chat. Before any figure goes to someone else, the user confirms it.
-9. Offer to record it: a changelog entry through `log-a-decision` with the cost table in the body (current, future, net), linked to the steps and tools, so the scenario lives on the entry.
+9. Offer to record it: a changelog entry through `log-a-decision` with its current state and future state set to the sections or tabs costed here, and the steps that will not run excluded from the future side by status (or by tag for a scope cut), so Puzzle keeps the roll-up current as the map changes. The body carries the rationale, the assumptions and the gaps, not a copy of the totals. Where the plan has no state fields, put the cost table in the body as before.
 
 ## Output format
 
@@ -81,7 +81,7 @@ Tools now: <tool: allocated share>. Tools future: <...>. Net: <n>.
 ## Rules
 
 - Every number traces to a step, a rate, a cost item or a scenario in the workspace, or to a vendor price with a date. Where an input is missing, report the gap and ask; the `audit-the-map` skill finds them all at once.
-- A future state figure is a projection until the work is live and re-measured. Say so.
+- A future state figure is a projection until the work is live and re-measured. Say so, including when it comes from a changelog entry's cost analysis.
 - Labor at hourly rate is the cost of time, not the saving in cash. Hours returned count only if the role's time has somewhere to go; say that when the reader might assume otherwise.
 - Keep the user's currency and their rate basis (base or loaded). Don't mix.
 - The report is generated from the workspace each time. Never edit a number in the document without changing it in the map first.

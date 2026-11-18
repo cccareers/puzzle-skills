@@ -31,8 +31,8 @@ Read the onboarding changelog entry first (`list_changelog_entries` with `query:
 | Team | `list_teams`, `include: ["role_count", "role_connections"]`; `list_roles`, `include: ["hourly_rate", "step_count", "people.person_id"]` | teams; roles; with a rate; with a person; reporting lines |
 | People | `list_people`, `include: ["role_count", "person_type", "tools"]` | people; holding a role; with tool access |
 | Workflows | `list_tabs` canvas `workflows`; `list_sections` per tab, `include: ["step_count"]`; for the first map, `list_steps` with `include: ["executor", "duration", "frequency", "roles.role_id", "tools.tool_id"]` | tabs; sections; steps; on the first map, steps missing executor, role, cost inputs or tool |
-| Record | `list_changelog_entries`, `include: ["status"]`; `list_shared_views` | entries by status; shared views |
-| Tags | `list_tag_groups`, `include: ["tag_count"]`; `list_tags`, `include: ["step_count"]` | groups; tags; tags on any step (none is not a gap) |
+| Record | `list_changelog_entries`, `include: ["status", "cost_analysis"]`; `list_shared_views`; `list_comments`, `resolved: false`, `top_level: true` | entries by status; entries with a cost analysis (both sides set); shared views; open comments by type (questions, pain points, ideas) |
+| Tags | `list_tag_groups`, `include: ["tag_count"]`; `list_tags`, `include: ["step_count"]` | groups; tags; tags on any step (none is not a gap; see stage 6) |
 
 Page through; `meta.total` is the count. A canvas is **as onboarding left it** when it has objects but the depth fields are empty, **in use** when most depth fields are filled, **empty** at zero.
 
@@ -43,7 +43,7 @@ Page through; `meta.total` is the count. A canvas is **as onboarding left it** w
 Onboarding (2026-10-20): 14 tools from the gallery, 3 teams and 9 roles from the org chart, 6 people, 1 process Nova built (38 steps)
 Tools: 14, 0 with costs, 0 groups · Data: 0 entities · Assets: 0
 Team: 9 roles, 0 with rates, 4 with people, 2 reporting lines · People: 6, 4 in roles, 0 with tool access
-Tags: 1 group, 4 tags, on 1 step
+Tags: 1 group, 4 tags, on 1 step · Open comments: 3 questions, 5 pain points · Entries with a cost analysis: 0
 First map "Client onboarding": 38 steps, 31 without executor, 38 without cost inputs, 0 attributes, 12 without a tool
 
 ## Round-out path
@@ -94,7 +94,7 @@ Onboarding left people cards. Sources in order: the existing people; the Google 
 
 ### Stage 6: the first map, then the next thing
 
-Onboarding usually left one process Nova built. Round it out first: `audit-the-map` on that section, then the fixes in one approved batch per kind, through `update_workflow` and `link_to_steps`: an executor on every step; a responsible role on every Person step; duration and frequency on every Person step; attributes on every step that reads or writes data; a tool on every step that happens in one; the two-call handle pass from `build-puzzle-process` (default on every connection, then the exceptions). Then the entry's last item offers two paths and records the pick:
+Onboarding usually left one process Nova built. Round it out first: `audit-the-map` on that section, then the fixes in one approved batch per kind, through `update_workflow` and `link_to_steps`: an executor on every step; a responsible role on every Person step; duration and frequency on every Person step; attributes on every step that reads or writes data; a tool on every step that happens in one; the two-call handle pass from `build-puzzle-process` (default on every connection, then the exceptions). A workspace with no tag groups is offered the starter set once in the same batch (Trigger Cadence and Operations Tags, from the Tags section of `build-puzzle-process`), applied to this map's steps on a yes. Then the entry's last item offers two paths and records the pick:
 
 - **Build the next process**: `interview-for-a-process` if it has to come out of someone's head, then `build-puzzle-process`.
 - **Analyze this one for opportunities**: `find-automation-opportunities`, with `cost-a-process` for the figures.

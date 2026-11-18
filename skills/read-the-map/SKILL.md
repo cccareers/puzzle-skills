@@ -23,8 +23,9 @@ Four canvases, a changelog, tasks and shared views. Everything links to everythi
 | Entity and attribute | Tools (data model) | The records a tool holds (Contact, Deal, Ticket) and their fields. Attributes link to the steps that read or write them, as trigger, input or output. |
 | Asset | Tools | A template, report, document, video or snippet kept inside a tool, with a URL, linked to the steps that use it. |
 | Task | Workflow | A checklist item on a step or section, outstanding or completed. |
+| Comment | Workflow | A thread on a step or a section, with a type (question, pain_point, idea, decision, note), an author, replies and a resolved flag. Comments are the conversation about the map: what is still unconfirmed, where it hurts, what could change. Older workspaces also hold comments of type `build_request`. |
 | Tag and tag group | Workspace settings | A label on steps from a workspace-wide set. Every tag sits in a group (a group "Cadence" holding Daily, Weekly, Monthly) and has a name, a color and an optional emoji. One tag can mark steps in every section, so tags answer questions that cut across processes. An Optimizer plan feature: a workspace can have none. |
-| Changelog entry | Changelog | A decision or change: body with the rationale, owner, status (idea, planned, in_progress, completed, archived), linked steps and tools. |
+| Changelog entry | Changelog | A decision or change: body with the rationale, owner, status (idea, planned, in_progress, completed, archived), linked steps and tools. On the Optimizer plan an entry can also name the sections or tabs it changes as its **current state** (before) and **future state** (after); Puzzle then rolls both sides up into a cost analysis. |
 | Shared view | Workspace | A public, curated subset of the map: selected sections, teams, tool groups, people tabs or people. |
 
 The map is a model the team maintains. It describes the operation as the team has documented it, not as a live system reports it. Say "the map says" when the distinction matters.
@@ -64,11 +65,13 @@ Resolve several tools in one call with a comma-separated query: `"Attio, QuickBo
 
 **What data does this step read or write.** `list_attributes` with `step_id` and `include: ["entity_name", "tool_name", "field_type", "steps.kind"]`. `kind` is trigger, input or output per step.
 
-**What does this cost.** Labor per step per month is duration in minutes divided by 60, times frequency, times the responsible role's hourly rate (from `list_roles` with `hourly_rate`). Tool costs come from `list_tools` scope `workspace` with `include: ["cost_items"]`. A step missing duration, frequency or a rated role has no labor figure; say so rather than estimating. The `cost-a-process` skill carries the full model.
+**What does this cost.** Labor per step per month is duration in minutes divided by 60, times frequency, times the responsible role's hourly rate (from `list_roles` with `hourly_rate`). Tool costs come from `list_tools` scope `workspace` with `include: ["cost_items"]`. A step missing duration, frequency or a rated role has no labor figure; say so rather than estimating. When the question is what a change saves, check the changelog first: `list_changelog_entries` with `include: ["current_state", "future_state", "cost_analysis"]` returns, for an entry that has both sides set, labor cost, tool cost, total and hours, monthly and annual, per side, and the net (future minus current; negative is a saving). The `cost-a-process` skill carries the full model.
 
 **Why is it like this.** `list_changelog_entries` with `query` (matches body text) or with `include: ["associated_steps.step_name"]` to find the entries behind a step. Read `body`, `status`, `completed_at`, `owner_name`. The changelog is the record of decisions; a step with no entry behind it has no recorded reason, and that is the honest answer.
 
-**What is outstanding.** `list_tasks` with `completed: false` and `include: ["step_name", "section_name"]`, filtered by `section_id` or `step_id` when the question is scoped.
+**What is outstanding.** `list_tasks` with `completed: false` and `include: ["step_name", "section_name"]`, filtered by `section_id` or `step_id` when the question is scoped. Open questions are the other half: `list_comments` with `type: "question"` and `resolved: false`.
+
+**What have people said about this step.** `list_comments` with `step_id` (or `section_id`, which covers the steps inside it), `top_level: true` and `include: ["author", "created_at", "step_name", "replies"]`; filter by `type` for pain points, questions, ideas or decisions, and by `resolved: false` for what is still open. A pain point is someone's report, not a measured fact: quote it and name who said it. A decision comment points at a changelog entry; the entry is the record.
 
 **What is public.** `list_shared_views` with `include: ["description", "slug", "password_protected", "items.type", "items.name"]`. A shared view is the only part of a workspace a non-member can see.
 

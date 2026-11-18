@@ -34,9 +34,10 @@ Pull everything the checks need, in as few calls as the scope allows:
 8. `list_entities` with `include: ["attribute_count", "step_count", "tool_name"]`.
 9. `list_assets` with `include: ["status", "step_count", "tool_name"]`.
 10. `list_tasks` with `completed: false` and `include: ["step_name", "section_name"]`.
-11. `list_changelog_entries` with `include: ["status", "associated_steps.step_id", "associated_tools.account_tool_id"]`.
+11. `list_changelog_entries` with `include: ["status", "associated_steps.step_id", "associated_tools.account_tool_id"]`; on the Optimizer plan add `"current_state", "future_state", "cost_analysis"`.
 12. `list_shared_views` with `include: ["items.type", "items.id", "items.name"]`.
 13. `list_tags` with `include: ["tag_group_name", "step_count"]`, when the workspace has tag groups.
+14. `list_comments` with `resolved: false`, `top_level: true` and `include: ["author", "created_at", "step_name", "section_name", "replies"]`.
 
 Save the raw results if the workspace is large; the checks run over the whole set.
 
@@ -100,6 +101,12 @@ Each check names what it finds, why it matters, and the fix. Severity: **blocks*
 | Shared view containing a section with Draft or Testing steps | weakens | The public sees unfinished work | Remove the section from the view or finish the work |
 | Tag on no step, or a tag group with no tags | tidies | Clutter in every tag picker | Ask whether it is still meant to be used; retiring it is the user's call, in the app |
 | Two tags that differ only in wording ("Weekly", "Weekly cadence") | tidies | One filter split in two | Propose one name and re-tag the other's steps (`link_to_steps` type tag, `unlink_from_steps` type step_tag) |
+| Tag that repeats a field: a role, team or person; a tool; manual or automated; deprecated beside status Archived; needs review beside a question comment | tidies | Two answers to one question, and the tag drifts from the field | Propose the field instead (role, tool, executor, status, a question comment); retiring the tag is the user's call, in the app |
+| Cadence tag that disagrees with the step's frequency (Weekly on a step that runs 20 times a month) | weakens | The schedule and the cost tell different stories | Ask which is right; fix the frequency or the tag |
+| Open question comment older than 30 days | weakens | Something unconfirmed is being treated as known | List it for the owner of the step, with who asked |
+| Open pain_point comment with no reply, or on a step that is now Archived | weakens | A reported problem with no answer, or answered by a change nobody closed out | Reply with what addresses it (or that nothing does yet); resolve it if the step it named is gone |
+| Changelog entry that changes cost (a redesign, an automation, a tool swap) with no current state or no future state set | weakens | The change has no cost case anyone can check | Set both sides through `log-a-decision` |
+| Changelog entry whose cost analysis shows a side at zero while it holds steps | weakens | The figure looks like a saving or a cost that isn't real | List the steps missing duration, frequency or a rated role on that side; fix the inputs, never the figure |
 
 ## Score and rank
 

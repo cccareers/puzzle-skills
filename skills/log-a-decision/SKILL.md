@@ -34,6 +34,8 @@ Say back the decision in one or two sentences so the user can correct the scope.
 
 The first H1 of the body. Three to eight words, specific enough to identify the decision, never a sentence. "Clio to CasePeer migration", "Intake triage moves to an AI agent", "Order-to-cash current state mapped". Not "Tech stack update", not "We decided to move intake triage to an agent because...".
 
+The title text sits on the `#` line itself: `# Intake triage moves to an AI agent`. A body that starts with `# ` and puts the words on the next line saves an empty heading, and the entry shows as "Untitled". Check this every time a body is rewritten, above all one read back from the API and edited.
+
 ### 3. Owner
 
 `list_people` with `query` for the person responsible for the decision or the build. Use their `id` as `person_id`. If the obvious owner isn't on the People canvas, ask; a changelog entry with the wrong owner misleads later readers. When an outside party (a consultant, a vendor) operates the workspace, they may exist as a person record under their company name.
@@ -58,7 +60,17 @@ Every workflow step the decision touches, so anyone viewing those steps sees the
 
 Every workspace tool the decision involves: introduced, extended, bridged, deprecated. `list_tools` scope `workspace` for the `account_tool_id` (not the catalogue `id`).
 
-### 7. Body
+### 7. Current state and future state (when the decision changes cost)
+
+On the Optimizer plan an entry can carry its own cost case. When the decision changes how work is done (a redesign, an automation, a tool swap, a removed step), name both sides:
+
+- **Current state:** the sections, or whole Workflow tabs, that run today (typically the section on the Current State tab).
+- **Future state:** the sections or tabs that will run after the change (typically its counterpart on the Future State tab). A source cannot sit on both sides.
+- **Exclusions:** steps in the future state that will not run after the change are left out of its cost, not deleted. Exclude by status first (Archived, Draft); exclude by tag only for a cut no status expresses, such as a phase mapped but not in this change's scope. The current side always counts every step.
+
+Resolve the ids with `list_sections` (or `list_tabs` for a whole tab) and put them in the proposal. A decision that changes no cost (a naming rule, a shared view, a data field) skips this step.
+
+### 8. Body
 
 Markdown, rendered in the changelog. Use what applies; skip sections that don't:
 
@@ -108,21 +120,27 @@ Content rules:
 - Don't fabricate. Unknown is "unknown"; a gut call is "a judgment call".
 - Plain language. No filler, no marketing words.
 
-### 8. Create
+### 9. Create
 
 `create_changelog_entries` with `body`, `person_id`, `status` (and `completed_at` when backdating). Note the returned `id`.
 
-### 9. Link
+### 10. Link
 
 `update_changelog_entries` with `add_step_ids` and `add_account_tool_ids`. Report any id that failed; don't block on it.
 
-### 10. Confirm
+When step 7 applies, the same call (create carries no state fields) sets `add_current_state_section_ids` or `add_current_state_tab_ids`, `add_future_state_section_ids` or `add_future_state_tab_ids`, and `future_state_exclude` with `statuses` and `tag_ids`. `future_state_exclude` replaces the whole filter; `{}` clears it.
 
-Tell the user the title and id, the URL (`/workspaces/<workspace>/changelog/<id>/edit` on the app origin), the status, the owner, the counts of linked steps and tools, and the sections the body contains.
+Then read it back: `list_changelog_entries` with the `id` and `include: ["current_state", "future_state", "cost_analysis"]`. `has_current` and `has_future` should both be true. A side that totals zero while it holds steps is missing inputs (durations, frequencies, role rates), not free: report which steps lack them and leave the figure as it is. Never fill an input to make the number move; `cost-a-process` finds the gaps.
+
+When the decision answers an open question or resolves a pain point recorded as a comment on the map, reply on that thread with one line and the entry's title and id, then resolve it (`create_comments` with `parent_id`, then `update_comments` with `resolved: true`). On steps the decision changes where a reader would look for the reason, a `decision` comment with the same one line is optional, and only after the user approves it. The comment points; the entry is the record.
+
+### 11. Confirm
+
+Tell the user the title and id, the URL (`/workspaces/<workspace>/changelog/<id>/edit` on the app origin), the status, the owner, the counts of linked steps and tools, and the sections the body contains. When both states are set, add the net from the cost analysis, monthly and annual, and any side with missing inputs.
 
 ## Updating an entry
 
-`list_changelog_entries` with `query` or `id` and `include: ["body", "status", "associated_steps.step_id", "associated_tools.account_tool_id"]`. Then `update_changelog_entries` with the fields that change: `status` (set `completed_at` when it becomes completed), `body` (pass the whole body; keep what was there word for word and add the new section), `add_step_ids`, `remove_step_ids`, `add_account_tool_ids`, `remove_account_tool_ids`. Never shorten an existing body to make room.
+`list_changelog_entries` with `query` or `id` and `include: ["body", "status", "associated_steps.step_id", "associated_tools.account_tool_id"]`. Then `update_changelog_entries` with the fields that change: `status` (set `completed_at` when it becomes completed), `body` (pass the whole body; keep what was there word for word and add the new section), `add_step_ids`, `remove_step_ids`, `add_account_tool_ids`, `remove_account_tool_ids`, and the state fields (`add_` and `remove_` for current and future state sections and tabs, `future_state_exclude`). Add `current_state`, `future_state` and `cost_analysis` to the include before changing them. Never shorten an existing body to make room, and keep the title on the `#` line.
 
 ## The quality bar
 

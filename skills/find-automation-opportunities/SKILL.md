@@ -12,7 +12,7 @@ Load `read-the-map` first. Use `cost-a-process` for any dollar figure.
 ## Inputs
 
 - The current state in the workspace: every section and step in scope with executor, role, tools, attributes, duration, frequency, notes.
-- Pain points: in step notes, in changelog entries, in interview output, or from the user.
+- Pain points: open `pain_point` comments on the steps and sections, then step notes, changelog entries, interview output, or the user.
 - Constraints the user has named: regulated steps, data that cannot leave a system, decisions a human must make, tools that are fixed.
 - The changelog, for decisions already made and opportunities already logged.
 
@@ -23,7 +23,8 @@ Load `read-the-map` first. Use `cost-a-process` for any dollar figure.
 3. `list_attributes` with `include: ["steps.step_id", "steps.kind", "entity_name", "tool_name", "field_type"]` to see which steps move structured data between systems.
 4. `list_tools` scope `workspace` with `include: ["status", "notes"]` for what is already in the stack, and which of it has an API or an automation connector.
 5. `list_changelog_entries` with `query` on words like "automate", "agent", "integration", "Zapier", "Make", "n8n" to find what was already decided.
-6. `list_tag_groups` with `include: ["description", "tags.id", "tags.name"]`, in case the team already tags steps by priority, friction or project; findings reuse those groups.
+6. `list_tag_groups` with `include: ["description", "tags.id", "tags.name"]`, in case the team already tags steps by priority, friction or project; findings reuse those groups. Steps already tagged Bottleneck or Error-prone (or the team's own words for them) are friction someone has marked: start there.
+7. `list_comments` with `type: "pain_point"`, `resolved: false`, `top_level: true` and `include: ["step_name", "section_name", "author", "created_at", "replies"]`, scoped by `section_id`; then the same with `type: "idea"` for improvements people have already suggested. A comment on a section rather than a step applies to the section as a whole.
 
 ## Read the friction, not only the automation candidates
 
@@ -67,7 +68,7 @@ Every opportunity gets a tier before a rank:
 
 ## Rank
 
-1. Steps touched, weighted by pain: a step with a pain point in a note or a changelog entry counts double.
+1. Steps touched, weighted by pain: a step with an open pain_point comment, or a pain point in a note or a changelog entry, counts double. Several people reporting the same pain on one step is stronger evidence than one; say how many.
 2. Prerequisites already met.
 3. Hours per month returned, where duration and frequency exist on the steps touched (duration ÷ 60 × frequency, summed). Where either is missing on a step, the figure is "not defensible: missing duration or frequency" and the gap is reported, not estimated.
 4. Risk: what breaks if the automation misfires, and how visible it is. A wrong email to a customer outranks a wrong internal tag.
@@ -93,7 +94,7 @@ From the current state map on <date>. <n> sections, <n> Person steps reviewed.
 ## Ranked opportunities
 ### 1. <Name>: <Automate | AI agent | Assist | Fix> · 🔴|🟡|🟢
 Steps touched: <section: step (id), ...>
-Pain resolved: <from notes, changelog, interview, or "none recorded">
+Pain resolved: <pain_point comments by step and who raised them, then notes, changelog, interview, or "none recorded">
 What changes: <two lines: who or what does it after, and what the human still does>
 Prerequisites: <system · data · integration · decision · build>
 Phase: <Now | Next | Later>
@@ -114,7 +115,7 @@ Risk: <one line>
 
 ## Annotating the map (opt in)
 
-The user can ask for the findings written onto the steps they concern: one line at the top of the step's note ("Opportunity: <name>, <tier>, <date>"), through `update_workflow`, proposed as a push plan and pushed only on approval. Or, where the workspace has tags, as tags a filter can find later. Reuse a group the team already keeps for priority or friction. Otherwise propose one group, "Opportunity", with one tag per tier: Critical (red), High impact (amber), Quick win (green), and a second, "Friction", only if the user wants the friction findings kept (Bottleneck, Double entry, Hand-back, Wait). Groups, tags and step links go in the push plan; `create_tags` with `step_ids` writes them, as in the Tags section of `build-puzzle-process`. Never annotate without being asked; a map covered in flags is a worse map.
+The user can ask for the findings written onto the steps they concern. The default is an `idea` comment on each step the opportunity touches (`create_comments`, `type: "idea"`, body: "Opportunity: <name>, <tier>, <date>" and one line on what changes), and, where it answers an open pain point, a reply on that thread instead of a new comment, so the pain and its proposed fix sit together. Comments keep the step's note for the procedure and can be resolved when the opportunity is built or dropped. Proposed as a push plan and posted only on approval. Or, where the workspace has tags, as tags a filter can find later. Reuse a group the team already keeps for priority or friction (an operations group with Bottleneck or Error-prone covers most friction findings). Otherwise propose one group, "Opportunity", with one tag per tier: Critical (red), High impact (amber), Quick win (green), and a second, "Friction", only if the user wants the friction findings kept (Bottleneck, Double entry, Hand-back, Wait). Groups, tags and step links go in the push plan; `create_tags` with `step_ids` writes them, as in the Tags section of `build-puzzle-process`. Never annotate without being asked; a map covered in flags is a worse map.
 
 ## From roadmap to map
 
@@ -123,7 +124,8 @@ When the user picks opportunities to pursue:
 1. Record the roadmap as a changelog entry with `log-a-decision` (status planned), linked to the steps touched and the tools involved.
 2. Build the future state with `build-puzzle-process` on a Future State tab, copying the current section and changing the executors, tools and steps the opportunity describes. Never edit the current state to show a future that isn't running.
 3. Annotate every Automation and AI Agent step in the future state with the pain point it resolves, in the note.
-4. Cost the before and after with `cost-a-process` and put the scenario on the entry.
+4. Cost the before and after with `cost-a-process` and put the scenario on the entry: its current state set to the current section, its future state to the new one, steps that will not run excluded by status (through `log-a-decision`). The entry's cost analysis then stays current as the future state is built.
+5. Reply on each pain_point comment the future state answers, naming the future state step. Resolve the thread when that step goes Live, not before.
 
 ## Rules
 

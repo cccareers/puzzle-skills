@@ -82,7 +82,7 @@ After orienting and drafting, gather **everything** missing in one consolidated 
 - **RACI** — present the inferred approver / consulted / informed assignments (from hierarchy and surrounding-step ownership) as a compact table for confirmation, alongside the responsible roles.
 - **People** — for any actual person named in the prompt ("then Sarah reviews it"): ask what role that person holds if it isn't stated and can't be resolved from the People Canvas. Steps are owned by roles, so every named person must map to a role.
 - **Attributes** — for steps whose tools have no matching entities/attributes: present a proposed entity + attribute list per step for approval before adding to the data model.
-- **Tags** — when the workspace has tag groups, the existing tags proposed per step for confirmation (see "Tags").
+- **Tags** — when the workspace has tag groups, the existing tags proposed per step for confirmation; when it has none, the starter set offered once (see "Tags").
 - **Branch logic** — any fork where the prompt is ambiguous about whether the paths rejoin, loop back, or diverge for good.
 
 Do the legwork before asking: research rates, draft the attribute model, estimate durations. The intake should read as "confirm or correct this," not "tell me everything." One round. If an answer creates one genuinely unforeseeable follow-up, fold it into the proposal review rather than opening a second interrogation.
@@ -108,6 +108,7 @@ A call transcript, meeting notes, an old SOP, a screen recording's transcript, a
 3. **Ask the three things a transcript never says.** What happens before the part they described (the trigger). What happens when it goes wrong (the exceptions). What has changed since the conversation (the status). If the conversation hasn't happened yet, `interview-for-a-process` prepares it.
 4. **Propose before building, as always**, with stated and inferred steps shown distinctly. The user's approval is what turns an inferred step into a stated one.
 5. **Name the source in the changelog entry**: the call and its date, or the document, and which steps were inferred and then confirmed, so a later reader knows where each step came from.
+6. **What people said goes in comments, not notes.** The step's note is the procedure. Pain points (in the speaker's words, with their role and the date), wishes, and anything still unconfirmed after the intake round become comments on the steps they concern: `pain_point`, `idea`, `question`. They go in the push plan as their own line (counts by type, one sample) and post after the build, after approval, with `create_comments` (`step_id` from the build, `type`, a Markdown `body`), one thread per point. An open question comment is the follow-up list for the next conversation; resolve it once the answer is in the step's fields.
 
 ## When the source is a tool's configuration
 
@@ -485,11 +486,30 @@ Link every tool a step touches — via `tool_ids` (and `primary_tool_id`) on the
 
 ## Tags
 
-A tag marks what the map has no field for: a cadence, a program or project the step belongs to, a priority, a compliance flag. Tags are workspace-wide, each in a group, so one tag can pull steps from every process into one filter.
+A tag marks what the map has no field for: a cadence, a place where work waits or breaks, a program or project the step belongs to, a priority, a compliance flag. Tags are workspace-wide, each in a group, so one tag can pull steps from every process into one filter, one color rule on the canvas or one cost cut.
 
-- **Reuse first.** Propose tags from the set `list_tag_groups` returned in step 2. A near-duplicate ("Weekly" beside "Weekly cadence") splits the filter in two. A workspace without groups gets no tags unless the user asks for them.
+- **Reuse first.** Propose tags from the set `list_tag_groups` returned in step 2. A near-duplicate ("Weekly" beside "Weekly cadence") splits the filter in two.
+- **A workspace with no tags gets the starter set offered once**, in the intake round, as two groups. It is created only on a yes, and never again offered once declined.
+
+| Group (description) | Tags | Goes on |
+|---|---|---|
+| Trigger Cadence ("The cadence that steps are triggered") | Daily (blue), Weekly (green), Monthly (amber), Quarterly (red) | The trigger step of a process that runs on a schedule, and a step inside a process that waits for a fixed date. An event-driven process (a form submitted, a deal won) gets none. |
+| Operations Tags ("Where work waits, breaks, or changes hands") | Bottleneck (amber), Error-prone (red), Customer steps (teal), Handoff (green) | Bottleneck: work queues here. Error-prone: it fails or gets redone (an automation that breaks, an entry that gets corrected). Customer steps: the customer sees or does it, when the customer is not a role on the map. Handoff: the step that receives work from another team. |
+
+- **Apply them from what the map and the source say**: notes, durations, waits, pain points, the roles on consecutive steps. A tag you inferred is shown as inferred in the proposal.
+- **Cadence agrees with frequency.** Frequency is runs per month and drives the cost; the cadence tag is the schedule. Weekly is about 4.33 a month, Monthly 1, Quarterly 0.33, Daily about 21 on working days. When they disagree, ask which is right.
 - **New tags only on request or approval**, in the intake round: the tag, its group, a color (crimson, red, amber, green, teal, blue, purple, gray) and an emoji if wanted. It goes in an existing group when it belongs there; a new group gets a description saying what it sorts steps by. Create with `create_tags`: `groups` with nested `tags` and their `step_ids`, or `tags` with `tag_group_id` to add to a group.
-- **When a requested tag duplicates a relationship the map already holds**, offer that instead. Who does a step is its roles and the people in them; where it happens is its tools; how it runs is its executor and status. Those drive the filters, the cost and the charts a tag can't. Make the tag if the user still wants it.
+- **When a requested tag duplicates something the map already holds**, offer that instead. Those fields drive the filters, the cost and the charts a tag can't. Make the tag if the user still wants it.
+
+| A tag for | Already held by |
+|---|---|
+| A role, a team, a person | The step's roles with their RACI involvement, and the people in each role |
+| A tool | The step's tools |
+| Manual, automated, AI | The executor |
+| Deprecated, retired, old | Status Archived |
+| Needs review, to confirm | An open `question` comment on the step |
+| Approval required | An approver role on the step; a tag only when the approver is outside the map (the client, a regulator) |
+
 - **Link after the build.** `create_process` carries no tags: `link_to_steps` with `type: tag` and `tag_id`, one entry per step and tag (re-tagging is a no-op). Remove one with `unlink_from_steps`, `type: step_tag`, and the `tags.step_tag_id` from `list_steps`. `update_tags` renames, recolors, changes the emoji, or moves a tag to another group with `tag_group_id`.
 
 ---
@@ -519,13 +539,13 @@ Set step `status` deliberately: **Live** for steps running in production today; 
 
 ## Changelog — memorialize every build
 
-When the process is built (or meaningfully changed), record it. Always. Use `create_changelog_entries` with a Markdown body (title as the first heading) that captures:
+When the process is built (or meaningfully changed), record it. Always. Use `create_changelog_entries` with a Markdown body (title as the first heading, the words on the `#` line itself) that captures:
 
 - What the user asked for, in substance (the process, the decisions made in intake: orientation and why, rates, attributes, branch logic)
-- What was created or changed, across **all** elements: section and steps, connections and labels, the handle table as applied, what the visual check found and fixed, whether the layout was set by hand to match a reference image (and which steps sit in which row), roles created (with rates), tools added, entities/attributes created and linked, tags linked (and any created), cost inputs set
+- What was created or changed, across **all** elements: section and steps, connections and labels, the handle table as applied, what the visual check found and fixed, whether the layout was set by hand to match a reference image (and which steps sit in which row), roles created (with rates), tools added, entities/attributes created and linked, tags linked (and any created), comments posted by type, cost inputs set
 - Why — the rationale behind any judgment calls
 
-Set `status: completed`, set the owner (`person_id` from `list_people`), then use `update_changelog_entries` to associate the relevant steps and tools so the entry is wired into the map. A build without a changelog entry is an incomplete build.
+Set `status: completed`, set the owner (`person_id` from `list_people`), then use `update_changelog_entries` to associate the relevant steps and tools so the entry is wired into the map. When the build is a future state of a process already mapped, set the entry's current state to the existing section and its future state to the new one (see `log-a-decision`), so its cost analysis shows the change. A build without a changelog entry is an incomplete build.
 
 ---
 
@@ -548,7 +568,8 @@ Before you call it done, confirm every step has:
 - [ ] Tools linked on every step that touches one
 - [ ] Attributes linked on every step that reads or writes data
 - [ ] Duration + frequency on every Person step (costing)
-- [ ] Tags the intake approved, from the existing set, linked
+- [ ] Tags the intake approved, from the existing set (or the starter set on a yes), linked
+- [ ] Pain points, wishes and open questions from the source posted as comments, after approval
 - [ ] A mini-SOP note (Purpose / Inputs / Procedure / Output)
 
 And the process as a whole:

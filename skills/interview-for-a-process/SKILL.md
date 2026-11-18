@@ -48,9 +48,11 @@ Each stage names the Puzzle field it fills.
 
 **Exceptions** (branches, terminators). What are the versions that don't follow the path? How often? Who handles them, and does the map need them or are they rare enough to note?
 
-**Pain** (notes, automation candidates). Where does this hurt? What gets redone, chased, or worked around? What would you stop doing tomorrow?
+**Cadence and hot spots** (step tags, when the workspace uses them). Does this run on a schedule: daily, weekly, monthly, quarterly? Where does work pile up? Where does it break or get redone? Which steps does the customer see? Where does it change teams?
 
-**Wish** (future state). If one step disappeared, which one? What have you tried already?
+**Pain** (pain_point comments, automation candidates). Where does this hurt? What gets redone, chased, or worked around? What would you stop doing tomorrow?
+
+**Wish** (idea comments, future state). If one step disappeared, which one? What have you tried already?
 
 **Definitions** (glossary). Any word used twice with two meanings: ask for the definition and write it down.
 
@@ -80,15 +82,29 @@ Known pain points to probe: ...
 ## Process 2: ...
 
 ## Listening checklist (what every answer should fill)
-Trigger · step name and type · executor · role and RACI · tool · fields read/written · minutes and times per month · waits · outcomes of each decision · exceptions · pain · definitions · assets
+Trigger · step name and type · executor · role and RACI · tool · fields read/written · minutes and times per month · cadence · waits · outcomes of each decision · exceptions · pain (in their words) · wishes · what is still unconfirmed · definitions · assets
 
 ## Open questions from what is known
 - ...
+
+## Comment plan (filled in after the conversation)
+| Step | Type | Their words | Source |
+|---|---|---|---|
+| <step, or "new: <name>"> | pain_point / question / idea / note | "<quote>" | <role>, <date> |
 ```
 
 ## After the conversation
 
-The answers feed `build-puzzle-process` directly: the trigger becomes the first step, each stage fills the matching field, decisions become conditionals with labeled branches, waits become delay steps, pain points go in the notes and into `find-automation-opportunities`. Anything the conversation didn't settle becomes the build skill's one intake round, not a second interview.
+The answers feed `build-puzzle-process` directly: the trigger becomes the first step, each stage fills the matching field, decisions become conditionals with labeled branches, waits become delay steps, a schedule or a hot spot becomes a step tag where the workspace uses them. Anything the conversation didn't settle becomes the build skill's one intake round, not a second interview.
+
+What people said, as opposed to what the process is, goes on the map as comments, through the comment plan:
+
+- **pain_point**: where it hurts, in the person's words, with their role, the date and any cost they named ("two hours every Monday"). On the step where it hurts. `find-automation-opportunities` reads these.
+- **question**: anything still unconfirmed after the conversation, with who can answer it. Resolved once the answer is in the step's fields.
+- **idea**: a wish or an improvement they suggested.
+- **note**: context worth keeping that fits no field.
+
+The plan is proposed with the build's push plan and posted after approval (`create_comments` with `step_id` or `section_id`, `type` and a Markdown `body`), one thread per point. Comments post as the connected user and notify no one.
 
 ## Rules
 
