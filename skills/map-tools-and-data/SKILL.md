@@ -1,6 +1,6 @@
 ---
 name: map-tools-and-data
-description: Build or extend the Tools canvas and the data model of a Puzzle workspace through the Puzzle MCP: the tools the operation runs on with their costs and status, as few tool groups as possible, the entities and attributes each tool holds, and the links from attributes to the steps that read or write them; hands bulk asset discovery to map-tool-assets. Load when the user asks to "map our tools", "add our tech stack", "add tool costs", "set up the data model", "which fields does this step touch", "map our templates and reports", "add our Zaps and automations", or when a process build names a tool, record or field that doesn't exist yet. One intake round, propose before writing, link to steps, changelog at the end.
+description: 'Build or extend the Tools canvas and the data model of a Puzzle workspace through the Puzzle MCP: the tools the operation runs on with their costs and status, as few tool groups as possible, the entities and attributes each tool holds, and the links from attributes to the steps that read or write them; hands bulk asset discovery to map-tool-assets. Load when the user asks to "map our tools", "add our tech stack", "add tool costs", "set up the data model", "which fields does this step touch", "map our templates and reports", "add our Zaps and automations", or when a process build names a tool, record or field that doesn''t exist yet. One intake round, propose before writing, link to steps, changelog at the end.'
 ---
 
 # Map tools and data

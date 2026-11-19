@@ -1,6 +1,6 @@
 ---
 name: evaluate-the-stack
-description: Answer "do we already have something that does this" from a Puzzle workspace through the Puzzle MCP, before a tool is bought, built or added. Reads three layers (the Tools canvas with costs and status, each tool's data model, the steps that use each tool and whether they're Live) and gives a verdict first: covered, partially covered, or gap, with the evidence. Flags two tools covering the same function, and tools that carry a cost but no Live step. Load when the user asks "do we have a tool for X", "does our stack already handle X", "are we paying for something we already have", "is there overlap between A and B", "should we add [tool]", or "audit our stack". Reads only; a decision that follows is logged with log-a-decision.
+description: 'Answer "do we already have something that does this" from a Puzzle workspace through the Puzzle MCP, before a tool is bought, built or added. Reads three layers (the Tools canvas with costs and status, each tool''s data model, the steps that use each tool and whether they''re Live) and gives a verdict first: covered, partially covered, or gap, with the evidence. Flags two tools covering the same function, and tools that carry a cost but no Live step. Load when the user asks "do we have a tool for X", "does our stack already handle X", "are we paying for something we already have", "is there overlap between A and B", "should we add [tool]", or "audit our stack". Reads only; a decision that follows is logged with log-a-decision.'
 ---
 
 # Evaluate the stack

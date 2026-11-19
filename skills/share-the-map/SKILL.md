@@ -1,6 +1,6 @@
 ---
 name: share-the-map
-description: Share part of a Puzzle workspace with people who aren't in it, through the Puzzle MCP: create or extend a public shared view holding the sections, teams, tool groups, people tab or people an audience should see. Load when the user asks to "share this process", "make a shared view", "send this map to the team, the client or a new hire", "publish this", "who can see this", or says yes to the share offer at the end of a build. Derives the contents from the workspace (the sections, the teams whose roles own their steps, the tool groups their steps use), asks only who it is for, extends an existing view for the same audience instead of creating a second, checks for Draft work before anything goes public, verifies the public URL and logs it.
+description: 'Share part of a Puzzle workspace with people who aren''t in it, through the Puzzle MCP: create or extend a public shared view holding the sections, teams, tool groups, people tab or people an audience should see. Load when the user asks to "share this process", "make a shared view", "send this map to the team, the client or a new hire", "publish this", "who can see this", or says yes to the share offer at the end of a build. Derives the contents from the workspace (the sections, the teams whose roles own their steps, the tool groups their steps use), asks only who it is for, extends an existing view for the same audience instead of creating a second, checks for Draft work before anything goes public, verifies the public URL and logs it.'
 ---
 
 # Share the map

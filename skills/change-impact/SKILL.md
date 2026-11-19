@@ -1,6 +1,6 @@
 ---
 name: change-impact
-description: Answer "what breaks if we change this" from a Puzzle workspace through the Puzzle MCP. A tool replaced or removed, a role removed or merged, a record or field retired: read every step, attribute, asset, person and shared view that depends on it, tier the impact (breaks, needs update, low risk), and when a replacement is named, list its capability gaps and the switch sequence. Load when the user asks "what breaks if we switch X for Y", "what's affected if we remove [tool]", "which processes use [role]", "impact of replacing X", "what touches [tool]", "can we drop [tool]", or before any change to the stack or the org. Reads only; offers to log the decision and to apply the relinking after approval.
+description: 'Answer "what breaks if we change this" from a Puzzle workspace through the Puzzle MCP. A tool replaced or removed, a role removed or merged, a record or field retired: read every step, attribute, asset, person and shared view that depends on it, tier the impact (breaks, needs update, low risk), and when a replacement is named, list its capability gaps and the switch sequence. Load when the user asks "what breaks if we switch X for Y", "what''s affected if we remove [tool]", "which processes use [role]", "impact of replacing X", "what touches [tool]", "can we drop [tool]", or before any change to the stack or the org. Reads only; offers to log the decision and to apply the relinking after approval.'
 ---
 
 # Change impact
