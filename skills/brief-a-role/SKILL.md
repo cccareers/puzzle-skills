@@ -1,6 +1,6 @@
 ---
 name: brief-a-role
-description: Write the brief for one role from a Puzzle workspace, in "you" voice, for the person stepping into it: what you own, where your work comes from and goes, every process you touch with your steps in order, the tools and the templates you'll use, what runs automatically around you, the known friction, and who to ask. Load when the user asks to "onboard [name]", "write an onboarding brief for [role]", "a new hire is starting as [role]", "what does the [role] do here", "hand this role over", or "explain this role to someone new". Reads the whole section around each step, never only the role's own steps. Short briefs inline; longer ones as a document, with a shared view offered for the processes it names.
+description: 'Write the brief for one role from a Puzzle workspace, in "you" voice, for the person stepping into it: what you own, where your work comes from and goes, every process you touch with your steps in order, the tools and the templates you''ll use, what runs automatically around you, the known friction, and who to ask. Load when the user asks to "onboard [name]", "write an onboarding brief for [role]", "a new hire is starting as [role]", "what does the [role] do here", "hand this role over", or "explain this role to someone new". Reads the whole section around each step, never only the role''s own steps. Short briefs inline; longer ones as a document, with a shared view offered for the processes it names.'
 ---
 
 # Brief a role

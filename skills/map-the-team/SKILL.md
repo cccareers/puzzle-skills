@@ -1,6 +1,6 @@
 ---
 name: map-the-team
-description: Build or extend the Team and People canvases of a Puzzle workspace through the Puzzle MCP: teams, roles with hourly rates, reporting lines, the people in each role, and the tools each person can access. Load when the user asks to "map the team", "add our org chart", "set up roles", "who reports to whom", "add hourly rates", "put people in roles", "add a new hire", or when a process build names a role that doesn't exist yet. Covers one intake round, rate research with the basis stated, roles versus people, hierarchy inferred from title seniority and team, top-to-bottom org and people charts whose reporting lines run from the manager's bottom handle to the report's top handle, and a changelog entry at the end.
+description: 'Build or extend the Team and People canvases of a Puzzle workspace through the Puzzle MCP: teams, roles with hourly rates, reporting lines, the people in each role, and the tools each person can access. Load when the user asks to "map the team", "add our org chart", "set up roles", "who reports to whom", "add hourly rates", "put people in roles", "add a new hire", or when a process build names a role that doesn''t exist yet. Covers one intake round, rate research with the basis stated, roles versus people, hierarchy inferred from title seniority and team, top-to-bottom org and people charts whose reporting lines run from the manager''s bottom handle to the report''s top handle, and a changelog entry at the end.'
 ---
 
 # Map the team

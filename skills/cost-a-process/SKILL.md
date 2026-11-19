@@ -1,6 +1,6 @@
 ---
 name: cost-a-process
-description: Compute what a process, a section, a tab or a whole Puzzle workspace costs per month from the map, through the Puzzle MCP: labor from each Person step's duration, frequency and responsible role's hourly rate, tool cost allocated across the steps that use each tool, and, when a future state exists, the net, hours returned and payback. Load when the user asks "what does this process cost", "how much time does this take", "cost of the current state", "what would we save", "ROI of this change", "business case", or wants a cost scenario for a changelog entry. Every figure traces to a step, a rate or a tool cost in the workspace; missing inputs are reported, never estimated.
+description: 'Compute what a process, a section, a tab or a whole Puzzle workspace costs per month from the map, through the Puzzle MCP: labor from each Person step''s duration, frequency and responsible role''s hourly rate, tool cost allocated across the steps that use each tool, and, when a future state exists, the net, hours returned and payback. Load when the user asks "what does this process cost", "how much time does this take", "cost of the current state", "what would we save", "ROI of this change", "business case", or wants a cost scenario for a changelog entry. Every figure traces to a step, a rate or a tool cost in the workspace; missing inputs are reported, never estimated.'
 ---
 
 # Cost a process
